@@ -3,7 +3,9 @@ package repositories
 import (
 	"climateControl/DAL"
 	"climateControl/DTO"
+	"climateControl/customErrors"
 	"climateControl/models"
+	"log"
 	"time"
 
 	"github.com/PeteProgrammer/go-automapper"
@@ -77,12 +79,87 @@ func (repository *UserRepository) RegisterUser(model DTO.UserDto) *mongo.InsertO
 	user.LastLoginDate = time.Now()
 
 	ctx := repository.dbContext
-	insertResult, err := repository.dbContext.Users.InsertOne(*ctx.MongoContext, user)
+	insertResult, err := ctx.Users.InsertOne(*ctx.MongoContext, user)
 	if err != nil {
 		panic(err)
 	}
 
 	return insertResult
+}
+
+func (repository *UserRepository) CheckUserCredentials(email string, password string) bool {
+	passwordHash, err := hashPassword(password)
+	if err != nil {
+		panic(err)
+	}
+	if user := repository.GetUserByEmail(email); user.PasswordHash == passwordHash {
+		ctx := repository.dbContext
+		updateResult, err := ctx.Users.UpdateOne(*ctx.MongoContext,
+			bson.M{"_id": user.ID},
+			bson.D{
+				{"$set", bson.D{{"lastLoginDate", time.Now()}}},
+			},
+		)
+		if err != nil {
+			panic(err)
+		} else if updateResult.ModifiedCount != 0 {
+			log.Println("Successful update")
+		}
+
+		return true
+	} else {
+		err := customErrors.UserPasswordIncorrectError{}.New()
+		panic(err)
+	}
+}
+
+func (repository *UserRepository) UpdateUserEmail(currentEmail string, newEmail string) bool {
+	ctx := repository.dbContext
+	updateResult, err := ctx.Users.UpdateOne(
+		*ctx.MongoContext,
+		bson.M{"email": currentEmail},
+		bson.D{
+			{"$set", bson.D{{"email", newEmail}}},
+		},
+	)
+
+	if err != nil {
+		panic(err)
+	}
+	if updateResult.ModifiedCount > 0 {
+		return true
+	}
+
+	return false
+}
+
+func (repository *UserRepository) UpdateUserPassword(email string, currentPassword string, newPassword string) bool {
+	ctx := repository.dbContext
+	newPasswordHash, err := hashPassword(newPassword)
+	if err != nil {
+		panic(err)
+	}
+
+	if repository.CheckUserCredentials(email, currentPassword) {
+		updateResult, err := ctx.Users.UpdateOne(
+			*ctx.MongoContext,
+			bson.M{"email": email},
+			bson.D{
+				{"$set", bson.D{{"passwordHash", newPasswordHash}}},
+			},
+		)
+		if err != nil {
+			panic(err)
+		}
+		if updateResult.ModifiedCount > 0 {
+			return true
+		}
+
+		return false
+	} else {
+		err := customErrors.UserPasswordIncorrectError{}.New()
+		panic(err)
+	}
 }
 
 func hashPassword(password string) (string, error) {
