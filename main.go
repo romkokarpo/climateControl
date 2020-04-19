@@ -1,7 +1,9 @@
 package main
 
 import (
+	"climateControl/DTO"
 	"climateControl/repositories"
+	"encoding/json"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -17,6 +19,7 @@ func main() {
 	router.GET("/users", handleGetUsers)
 	router.GET("/controlSystems", handleGetControlSystems)
 	router.POST("/updateSysDoc", handleUpdateSysDoc)
+	router.POST("/deleteSystemDevices", handleDeleteSystemDevices)
 
 	router.Run(":3000")
 }
@@ -33,18 +36,35 @@ func handleGetControlSystems(c *gin.Context) {
 
 func handleUpdateSysDoc(c *gin.Context) {
 	controlSystemRepository := repositories.NewControlSystemRepository()
-	systemId := c.PostForm("systemId")
-	deviceId := c.PostForm("deviceId")
-	newSerialNumber := c.PostForm("newSerialNumber")
+	decoder := json.NewDecoder(c.Request.Body)
+	var embeddedDevice = DTO.EmbeddedDevice{}
+	err := decoder.Decode(&embeddedDevice)
+	if err != nil {
+		panic(err)
+	}
 
-	success := controlSystemRepository.UpdateSystemDocument(
-		systemId,
-		deviceId,
-		newSerialNumber,
-	)
+	success := controlSystemRepository.UpdateSystemDevice(embeddedDevice)
 
 	if success {
-		c.JSON(http.StatusOK, newSerialNumber)
+		c.JSON(http.StatusOK, embeddedDevice.DeviceID)
+	} else {
+		c.JSON(http.StatusInternalServerError, "Some error occured")
+	}
+}
+
+func handleDeleteSystemDevices(c *gin.Context) {
+	repository := repositories.NewControlSystemRepository()
+	decoder := json.NewDecoder(c.Request.Body)
+	var embeddedDevices []*DTO.EmbeddedDevice
+
+	err := decoder.Decode(&embeddedDevices)
+	if err != nil {
+		panic(err)
+	}
+
+	deletedNumber := repository.DeleteSystemDevices(embeddedDevices)
+	if deletedNumber > 0 {
+		c.JSON(http.StatusOK, deletedNumber)
 	} else {
 		c.JSON(http.StatusInternalServerError, "Some error occured")
 	}

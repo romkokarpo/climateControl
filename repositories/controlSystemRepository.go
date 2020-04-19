@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"climateControl/DAL"
+	"climateControl/DTO"
 	"climateControl/models"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -86,24 +87,18 @@ func (repository *ControlSystemRepository) UpdateSystemName(id string, newName s
 	return updateResult.ModifiedCount > 0
 }
 
-func (repository *ControlSystemRepository) UpdateSystemDocument(systemId string, deviceId string, newSerialNumber string) bool {
+func (repository *ControlSystemRepository) UpdateSystemDevice(deviceDto DTO.EmbeddedDevice) bool {
 	ctx := repository.dbContext
-	sysId, err := primitive.ObjectIDFromHex(systemId)
-	if err != nil {
-		panic(err)
-	}
-
-	devId, err := primitive.ObjectIDFromHex(deviceId)
-	if err != nil {
-		panic(err)
-	}
 
 	updateResult, err := ctx.ControlSystems.UpdateOne(
 		*ctx.MongoContext,
-		bson.M{"_id": sysId, "devices.deviceId": devId},
+		bson.M{"_id": deviceDto.ControlSystemID, "devices.deviceId": deviceDto.DeviceID},
 		bson.M{
 			"$set": bson.M{
-				"devices.$.serialNumber": newSerialNumber,
+				"devices.$.serialNumber":      deviceDto.SerialNumber,
+				"devices.$.dateOfManufacture": deviceDto.DateOfManufacture,
+				"devices.$.currentStatus":     deviceDto.CurrentStatus,
+				"devices.$.deviceId":          deviceDto.DeviceID,
 			},
 		},
 	)
@@ -112,4 +107,49 @@ func (repository *ControlSystemRepository) UpdateSystemDocument(systemId string,
 	}
 
 	return updateResult.ModifiedCount > 0
+}
+
+func (repository *ControlSystemRepository) DeleteSystem(id string) bool {
+	ctx := repository.dbContext
+	sysId, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		panic(err)
+	}
+
+	deleteResult, err := ctx.ControlSystems.DeleteOne(*ctx.MongoContext, bson.M{"_id": sysId})
+	if err != nil {
+		panic(err)
+	}
+
+	return deleteResult.DeletedCount > 0
+}
+
+func (repository *ControlSystemRepository) DeleteSystemDevices(devices []*DTO.EmbeddedDevice) int64 {
+	ctx := repository.dbContext
+
+	deleteResult, err := ctx.Users.DeleteMany(
+		*ctx.MongoContext,
+		bson.M{
+			"_id": devices[0].ControlSystemID,
+			"devices.deviceId": bson.M{
+				"$in": getDeviceIdsSlice(devices),
+			},
+		},
+	)
+	if err != nil {
+		panic(err)
+	}
+
+	return deleteResult.DeletedCount
+}
+
+func getDeviceIdsSlice(devices []*DTO.EmbeddedDevice) []primitive.ObjectID {
+	var result []primitive.ObjectID
+	result = make([]primitive.ObjectID, len(devices), len(devices))
+
+	for _, value := range devices {
+		result = append(result, value.DeviceID)
+	}
+
+	return result
 }
