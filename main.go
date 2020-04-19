@@ -15,6 +15,7 @@ func main() {
 		})
 	})
 	router.GET("/users", handleGetUsers)
+	router.GET("/controlSystems", handleGetControlSystems)
 
 	router.Run(":3000")
 }
@@ -22,4 +23,9 @@ func main() {
 func handleGetUsers(c *gin.Context) {
 	userRepository := repositories.NewUserRepository()
 	c.JSON(http.StatusOK, userRepository.GetAllUsers())
+}
+
+func handleGetControlSystems(c *gin.Context) {
+	controlSystemRepository := repositories.NewControlSystemRepository()
+	c.JSON(http.StatusOK, controlSystemRepository.GetAllControlSystems())
 }
