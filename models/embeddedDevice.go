@@ -6,7 +6,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-type ControlSystemEmbd struct {
+type EmbeddedDevice struct {
 	DeviceID          primitive.ObjectID `bson:"deviceId,omitempty"`
 	SerialNumber      string             `bson:"serialNumber,omitempty"`
 	DateOfManufacture time.Time          `bson:"dateOfManufacture,omitempty"`

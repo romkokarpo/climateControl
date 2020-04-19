@@ -19,7 +19,7 @@ type DbContext struct {
 }
 
 func NewDbContext() *DbContext {
-	clOptions := options.Client().ApplyURI("mongodb://localhost:27017")
+	clOptions := options.Client().ApplyURI("mongodb://127.0.0.1:27017/")
 	cl, err := mongo.Connect(context.TODO(), clOptions)
 
 	if err != nil {
