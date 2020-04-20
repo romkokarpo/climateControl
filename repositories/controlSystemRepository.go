@@ -4,6 +4,7 @@ import (
 	"climateControl/DAL"
 	"climateControl/DTO"
 	"climateControl/models"
+	"log"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -126,13 +127,23 @@ func (repository *ControlSystemRepository) DeleteSystem(id string) bool {
 
 func (repository *ControlSystemRepository) DeleteSystemDevices(devices []*DTO.EmbeddedDevice) int64 {
 	ctx := repository.dbContext
+	deviceIds := getDeviceIdsSlice(devices)
 
-	deleteResult, err := ctx.Users.DeleteMany(
+	deleteResult, err := ctx.ControlSystems.UpdateOne(
 		*ctx.MongoContext,
 		bson.M{
 			"_id": devices[0].ControlSystemID,
 			"devices.deviceId": bson.M{
-				"$in": getDeviceIdsSlice(devices),
+				"$in": deviceIds,
+			},
+		},
+		bson.M{
+			"$pull": bson.M{
+				"devices": bson.M{
+					"deviceId": bson.M{
+						"$in": deviceIds,
+					},
+				},
 			},
 		},
 	)
@@ -140,15 +151,16 @@ func (repository *ControlSystemRepository) DeleteSystemDevices(devices []*DTO.Em
 		panic(err)
 	}
 
-	return deleteResult.DeletedCount
+	return deleteResult.ModifiedCount
 }
 
 func getDeviceIdsSlice(devices []*DTO.EmbeddedDevice) []primitive.ObjectID {
 	var result []primitive.ObjectID
 	result = make([]primitive.ObjectID, len(devices), len(devices))
 
-	for _, value := range devices {
-		result = append(result, value.DeviceID)
+	for index, value := range devices {
+		result[index] = value.DeviceID
+		log.Println(value.DeviceID.String())
 	}
 
 	return result
