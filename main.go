@@ -18,8 +18,11 @@ func main() {
 	})
 	router.GET("/users", handleGetUsers)
 	router.GET("/controlSystems", handleGetControlSystems)
+	router.GET("/companies", handleGetCompanies)
+
 	router.POST("/updateSysDoc", handleUpdateSysDoc)
 	router.POST("/deleteSystemDevices", handleDeleteSystemDevices)
+	router.POST("/company/addNewOffices", handleAddNewOfficesToCompany)
 
 	router.Run(":3000")
 }
@@ -65,6 +68,31 @@ func handleDeleteSystemDevices(c *gin.Context) {
 	deletedNumber := repository.DeleteSystemDevices(embeddedDevices)
 	if deletedNumber > 0 {
 		c.JSON(http.StatusOK, deletedNumber)
+	} else {
+		c.JSON(http.StatusInternalServerError, "Some error occured")
+	}
+}
+
+func handleGetCompanies(c *gin.Context) {
+	repository := repositories.NewCompanyRepository()
+	companies := repository.GetAllCompanies()
+
+	c.JSON(http.StatusOK, companies)
+}
+
+func handleAddNewOfficesToCompany(c *gin.Context) {
+	repository := repositories.NewCompanyRepository()
+	decoder := json.NewDecoder(c.Request.Body)
+	var newOffices *DTO.EmbeddedOfficeDto
+
+	err := decoder.Decode(&newOffices)
+	if err != nil {
+		panic(err)
+	}
+
+	success := repository.AddNewOffices(newOffices)
+	if success {
+		c.JSON(http.StatusOK, newOffices)
 	} else {
 		c.JSON(http.StatusInternalServerError, "Some error occured")
 	}
