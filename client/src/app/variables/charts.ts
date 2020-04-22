@@ -5,13 +5,13 @@ import Chart from 'chart.js';
 //
 
 Chart.elements.Rectangle.prototype.draw = function() {
-  var ctx = this._chart.ctx;
-  var vm = this._view;
-  var left, right, top, bottom, signX, signY, borderSkipped, radius;
-  var borderWidth = vm.borderWidth;
+  const ctx = this._chart.ctx;
+  const vm = this._view;
+  let left, right, top, bottom, signX, signY, borderSkipped;
+  let borderWidth = vm.borderWidth;
   // Set Radius Here
   // If radius is large enough to cause drawing errors a max radius is imposed
-  var cornerRadius = 6;
+  const cornerRadius = 6;
 
   if (!vm.horizontal) {
     // bar
@@ -37,15 +37,15 @@ Chart.elements.Rectangle.prototype.draw = function() {
   // adjust the sizes to fit if we're setting a stroke on the line
   if (borderWidth) {
     // borderWidth shold be less than bar width and bar height.
-    var barSize = Math.min(Math.abs(left - right), Math.abs(top - bottom));
+    const barSize = Math.min(Math.abs(left - right), Math.abs(top - bottom));
     borderWidth = borderWidth > barSize ? barSize : borderWidth;
-    var halfStroke = borderWidth / 2;
+    const halfStroke = borderWidth / 2;
     // Adjust borderWidth when bar top position is near vm.base(zero).
-    var borderLeft = left + (borderSkipped !== "left" ? halfStroke * signX : 0);
-    var borderRight =
+    const borderLeft = left + (borderSkipped !== "left" ? halfStroke * signX : 0);
+    const borderRight =
       right + (borderSkipped !== "right" ? -halfStroke * signX : 0);
-    var borderTop = top + (borderSkipped !== "top" ? halfStroke * signY : 0);
-    var borderBottom =
+    const borderTop = top + (borderSkipped !== "top" ? halfStroke * signY : 0);
+    const borderBottom =
       bottom + (borderSkipped !== "bottom" ? -halfStroke * signY : 0);
     // not become a vertical line?
     if (borderLeft !== borderRight) {
@@ -67,11 +67,11 @@ Chart.elements.Rectangle.prototype.draw = function() {
   // Corner points, from bottom-left to bottom-right clockwise
   // | 1 2 |
   // | 0 3 |
-  var corners = [[left, bottom], [left, top], [right, top], [right, bottom]];
+  const corners = [[left, bottom], [left, top], [right, top], [right, bottom]];
 
   // Find first (starting) corner with fallback to 'bottom'
-  var borders = ["bottom", "left", "top", "right"];
-  var startCorner = borders.indexOf(borderSkipped, 0);
+  const borders = ['bottom', 'left', 'top', 'right'];
+  let startCorner = borders.indexOf(borderSkipped, 0);
   if (startCorner === -1) {
     startCorner = 0;
   }
@@ -81,10 +81,10 @@ Chart.elements.Rectangle.prototype.draw = function() {
   }
 
   // Draw rectangle from 'startCorner'
-  var corner = cornerAt(0);
+  let corner = cornerAt(0);
   ctx.moveTo(corner[0], corner[1]);
 
-  for (var i = 1; i < 4; i++) {
+  for (let i = 1; i < 4; i++) {
     corner = cornerAt(i);
     let nextCornerId = i + 1;
     if (nextCornerId === 4) {
@@ -93,12 +93,12 @@ Chart.elements.Rectangle.prototype.draw = function() {
 
     // let nextCorner = cornerAt(nextCornerId);
 
-    let width = corners[2][0] - corners[1][0];
-    let height = corners[0][1] - corners[1][1];
-    let x = corners[1][0];
-    let y = corners[1][1];
+    const width = corners[2][0] - corners[1][0];
+    const height = corners[0][1] - corners[1][1];
+    const x = corners[1][0];
+    const y = corners[1][1];
     // eslint-disable-next-line
-    var radius: any = cornerRadius;
+    let radius: any = cornerRadius;
 
     // Fix radius being too large
     if (radius > height / 2) {
@@ -125,13 +125,13 @@ Chart.elements.Rectangle.prototype.draw = function() {
   }
 };
 
-var mode = 'light';//(themeMode) ? themeMode : 'light';
-var fonts = {
+const mode = 'dark'; // (themeMode) ? themeMode : 'light';
+const fonts = {
   base: 'Open Sans'
-}
+};
 
 // Colors
-var colors = {
+const colors = {
   gray: {
     100: '#f6f9fc',
     200: '#e9ecef',
@@ -160,13 +160,13 @@ var colors = {
 export function chartOptions() {
 
   // Options
-  var options = {
+  const options = {
     defaults: {
       global: {
         responsive: true,
         maintainAspectRatio: false,
-        defaultColor: (mode == 'dark') ? colors.gray[700] : colors.gray[600],
-        defaultFontColor: (mode == 'dark') ? colors.gray[700] : colors.gray[600],
+        defaultColor: (mode === 'dark') ? colors.gray[700] : colors.gray[600],
+        defaultFontColor: (mode === 'dark') ? colors.gray[700] : colors.gray[600],
         defaultFontFamily: fonts.base,
         defaultFontSize: 13,
         layout: {
@@ -197,7 +197,7 @@ export function chartOptions() {
           },
           arc: {
             backgroundColor: colors.theme['primary'],
-            borderColor: (mode == 'dark') ? colors.gray[800] : colors.white,
+            borderColor: (mode === 'dark') ? colors.gray[800] : colors.white,
             borderWidth: 4
           }
         },
@@ -210,11 +210,11 @@ export function chartOptions() {
       doughnut: {
         cutoutPercentage: 83,
         legendCallback: function(chart) {
-          var data = chart.data;
-          var content = '';
+          const data = chart.data;
+          let content = '';
 
           data.labels.forEach(function(label, index) {
-            var bgColor = data.datasets[0].backgroundColor[index];
+            const bgColor = data.datasets[0].backgroundColor[index];
 
             content += '<span class="chart-legend-item">';
             content += '<i class="chart-legend-indicator" style="background-color: ' + bgColor + '"></i>';
@@ -226,19 +226,19 @@ export function chartOptions() {
         }
       }
     }
-  }
+  };
 
   // yAxes
   Chart.scaleService.updateScaleDefaults('linear', {
     gridLines: {
       borderDash: [2],
       borderDashOffset: [2],
-      color: (mode == 'dark') ? colors.gray[900] : colors.gray[300],
+      color: (mode === 'dark') ? colors.gray[900] : colors.gray[300],
       drawBorder: false,
       drawTicks: false,
       lineWidth: 0,
       zeroLineWidth: 0,
-      zeroLineColor: (mode == 'dark') ? colors.gray[900] : colors.gray[300],
+      zeroLineColor: (mode === 'dark') ? colors.gray[900] : colors.gray[300],
       zeroLineBorderDash: [2],
       zeroLineBorderDashOffset: [2]
     },
@@ -247,7 +247,7 @@ export function chartOptions() {
       padding: 10,
       callback: function(value) {
         if (!(value % 10)) {
-          return value
+          return value;
         }
       }
     }
@@ -271,14 +271,14 @@ export function chartOptions() {
 }
 
 export const parseOptions = (parent, options) => {
-		for (var item in options) {
-			if (typeof options[item] !== 'object') {
-				parent[item] = options[item];
-			} else {
-				parseOptions(parent[item], options[item]);
-			}
-		}
-	}
+  for (const item in options) {
+    if (typeof options[item] !== 'object') {
+      parent[item] = options[item];
+    } else {
+      parseOptions(parent[item], options[item]);
+    }
+  }
+};
 
 export const chartExample1 = {
   options: {
@@ -291,7 +291,7 @@ export const chartExample1 = {
         ticks: {
           callback: function(value) {
             if (!(value % 10)) {
-              return '$' + value + 'k';
+              return value + 'C';
             }
           }
         }
@@ -299,13 +299,13 @@ export const chartExample1 = {
     }
   },
   data: {
-    labels: ['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
     datasets: [{
-      label: 'Performance',
-      data: [0, 20, 10, 30, 15, 40, 20, 60, 60]
+      label: 'Temperature',
+      data: [18, 20, 18.5, 13, 17, 21, 20, 19, 15.7]
     }]
   }
-}
+};
 
 export const chartExample2 = {
   options: {
@@ -315,7 +315,7 @@ export const chartExample2 = {
           ticks: {
             callback: function(value) {
               if (!(value % 10)) {
-                //return '$' + value + 'k'
+                // return '$' + value + 'k'
                 return value;
               }
             }
@@ -326,9 +326,9 @@ export const chartExample2 = {
     tooltips: {
       callbacks: {
         label: function(item, data) {
-          var label = data.datasets[item.datasetIndex].label || "";
-          var yLabel = item.yLabel;
-          var content = "";
+          const label = data.datasets[item.datasetIndex].label || '';
+          const yLabel = item.yLabel;
+          let content = '';
           if (data.datasets.length > 1) {
             content += label;
           }
@@ -339,12 +339,12 @@ export const chartExample2 = {
     }
   },
   data: {
-    labels: ["Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
     datasets: [
       {
-        label: "Sales",
-        data: [25, 20, 30, 22, 17, 29]
+        label: '%',
+        data: [54, 61, 49.7, 80.03, 67, 55.9, 50.4]
       }
     ]
   }
-}
+};
