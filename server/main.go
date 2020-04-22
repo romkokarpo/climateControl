@@ -3,6 +3,7 @@ package main
 import (
 	"climateControl/DTO"
 	"climateControl/repositories"
+	"climateControl/server/services"
 	"encoding/json"
 	"net/http"
 
@@ -23,6 +24,7 @@ func main() {
 	router.POST("/updateSysDoc", handleUpdateSysDoc)
 	router.POST("/deleteSystemDevices", handleDeleteSystemDevices)
 	router.POST("/company/addNewOffices", handleAddNewOfficesToCompany)
+	router.POST("/login", handleUserLogin)
 
 	router.Run(":3000")
 }
@@ -96,4 +98,31 @@ func handleAddNewOfficesToCompany(c *gin.Context) {
 	} else {
 		c.JSON(http.StatusInternalServerError, "Some error occured")
 	}
+}
+
+func handleUserLogin(c *gin.Context) {
+	authService := services.NewAuthenticationService()
+	userRepository := repositories.NewUserRepository()
+	username := c.PostForm("username")
+	password := c.PostForm("password")
+
+	validUserCreds := userRepository.validUserCreds(username, password)
+	if !validUserCreds {
+		c.Writer.WriteHeader(http.StatusUnauthorized)
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"message": "User credentials are invalid",
+		})
+	}
+
+	authService.GenerateToken(username)
+
+	c.SetCookie(
+		"id_token",
+		authService.JwtToken,
+		authService.ExpirationTime.Second(),
+		"/",
+		c.Request.Host,
+		false,
+		true,
+	)
 }

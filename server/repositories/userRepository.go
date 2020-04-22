@@ -87,7 +87,7 @@ func (repository *UserRepository) RegisterUser(model DTO.UserDto) *mongo.InsertO
 	return insertResult
 }
 
-func (repository *UserRepository) CheckUserCredentials(email string, password string) bool {
+func (repository *UserRepository) CheckUserCredentials(email string, password string) bool, {
 	passwordHash, err := hashPassword(password)
 	if err != nil {
 		panic(err)
