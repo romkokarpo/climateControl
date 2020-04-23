@@ -7,7 +7,7 @@ import (
 )
 
 type AuthenticationService struct {
-	jwtKey string
+	jwtKey []byte
 
 	JwtToken       string
 	ExpirationTime time.Time
@@ -15,7 +15,7 @@ type AuthenticationService struct {
 
 func NewAuthenticationService() *AuthenticationService {
 	return &AuthenticationService{
-		jwtKey: "Some random key for the time being",
+		jwtKey: []byte("Some random key for the time being"),
 	}
 }
 

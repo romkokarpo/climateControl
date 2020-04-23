@@ -1,10 +1,10 @@
 package repositories
 
 import (
-	"climateControl/DAL"
-	"climateControl/DTO"
-	"climateControl/customErrors"
-	"climateControl/models"
+	"climateControl/server/DAL"
+	"climateControl/server/DTO"
+	"climateControl/server/customErrors"
+	"climateControl/server/models"
 	"log"
 	"time"
 
@@ -51,7 +51,7 @@ func (repository *UserRepository) GetUserById(id string) *models.User {
 
 	queryResult := ctx.Users.FindOne(*ctx.MongoContext, bson.M{"_id": userId})
 	user := models.User{}
-	queryResult.Decode(user)
+	queryResult.Decode(&user)
 
 	return &user
 }
@@ -60,7 +60,7 @@ func (repository *UserRepository) GetUserByEmail(email string) *models.User {
 	ctx := repository.dbContext
 	queryResult := ctx.Users.FindOne(*ctx.MongoContext, bson.M{"email": email})
 	user := models.User{}
-	queryResult.Decode(user)
+	queryResult.Decode(&user)
 
 	return &user
 }
@@ -87,12 +87,10 @@ func (repository *UserRepository) RegisterUser(model DTO.UserDto) *mongo.InsertO
 	return insertResult
 }
 
-func (repository *UserRepository) CheckUserCredentials(email string, password string) bool, {
-	passwordHash, err := hashPassword(password)
-	if err != nil {
-		panic(err)
-	}
-	if user := repository.GetUserByEmail(email); user.PasswordHash == passwordHash {
+func (repository *UserRepository) CheckUserCredentials(email string, password string) bool {
+	user := repository.GetUserByEmail(email)
+
+	if err := compareHashAndPassword(user.PasswordHash, password); err == nil {
 		ctx := repository.dbContext
 		updateResult, err := ctx.Users.UpdateOne(*ctx.MongoContext,
 			bson.M{"_id": user.ID},
@@ -163,6 +161,12 @@ func (repository *UserRepository) UpdateUserPassword(email string, currentPasswo
 }
 
 func hashPassword(password string) (string, error) {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 1)
 	return string(bytes), err
+}
+
+func compareHashAndPassword(hash, password string) error {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+
+	return err
 }

@@ -1,3 +1,4 @@
+import { HttpHelper } from './../../helpers/httpHelper';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { User } from 'src/app/models/User';
@@ -11,7 +12,7 @@ export class AuthenticationService {
   constructor(private http: HttpClient) { }
 
   public login(email: string, password: string) {
-    return this.http.post<User>('/api/login', {email, password})
+    return this.http.post<User>(HttpHelper.baseServerUrl + '/login', {email, password})
     .subscribe((res) => {
       this.setSession(res);
     });

@@ -1,8 +1,8 @@
 package main
 
 import (
-	"climateControl/DTO"
-	"climateControl/repositories"
+	"climateControl/server/DTO"
+	"climateControl/server/repositories"
 	"climateControl/server/services"
 	"encoding/json"
 	"net/http"
@@ -106,7 +106,7 @@ func handleUserLogin(c *gin.Context) {
 	username := c.PostForm("username")
 	password := c.PostForm("password")
 
-	validUserCreds := userRepository.validUserCreds(username, password)
+	validUserCreds := userRepository.CheckUserCredentials(username, password)
 	if !validUserCreds {
 		c.Writer.WriteHeader(http.StatusUnauthorized)
 		c.JSON(http.StatusUnauthorized, gin.H{
