@@ -25,7 +25,10 @@ type Claims struct {
 }
 
 func (service *AuthenticationService) GenerateToken(userName string) {
-	expirationTime := time.Now().Add(5 * time.Hour)
+	expirationTime := time.Now().Local().Add(time.Hour*time.Duration(5) +
+		time.Minute*time.Duration(5) +
+		time.Second*time.Duration(5))
+
 	claims := &Claims{
 		Username: userName,
 		StandardClaims: jwt.StandardClaims{

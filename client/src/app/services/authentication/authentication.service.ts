@@ -3,18 +3,24 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { User } from 'src/app/models/User';
 import * as moment from "moment";
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthenticationService {
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private router: Router) { }
 
   public login(email: string, password: string) {
-    return this.http.post<User>(HttpHelper.baseServerUrl + '/login', {email, password})
+    const formData = new FormData();
+    formData.append("username", email);
+    formData.append("password", password);
+
+    return this.http.post<User>(HttpHelper.baseServerUrl + '/login', formData)
     .subscribe((res) => {
       this.setSession(res);
+      this.router.navigate(['/dashboard']);
     });
   }
 
@@ -37,7 +43,8 @@ export class AuthenticationService {
   private getExpiration() {
     const expiration = localStorage.getItem("expires_at");
     const expiresAt = JSON.parse(expiration);
+    const result = moment(expiresAt);
 
-    return moment(expiresAt);
+    return result;
   }
 }

@@ -6,12 +6,26 @@ import (
 	"climateControl/server/services"
 	"encoding/json"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
+	cors "github.com/itsjamie/gin-cors"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 func main() {
 	router := gin.Default()
+
+	router.Use(cors.Middleware(cors.Config{
+		Origins:         "*",
+		Methods:         "GET, PUT, POST, DELETE",
+		RequestHeaders:  "Origin, Authorization, Content-Type",
+		ExposedHeaders:  "",
+		MaxAge:          50 * time.Second,
+		Credentials:     true,
+		ValidateHeaders: false,
+	}))
+
 	router.GET("/ping", func(context *gin.Context) {
 		context.JSON(200, gin.H{
 			"message": "pong",
@@ -125,4 +139,8 @@ func handleUserLogin(c *gin.Context) {
 		false,
 		true,
 	)
+	c.JSON(http.StatusOK, bson.M{
+		"expiresIn": authService.ExpirationTime.Second(),
+		"idToken":   authService.JwtToken,
+	})
 }
