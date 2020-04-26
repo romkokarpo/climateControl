@@ -1,10 +1,9 @@
 <div class="header bg-gradient-danger py-7 py-lg-8">
   <div class="container">
-    <div class="header-body text-center mb-7">
+    <div class="header-body text-center welcome-heading">
       <div class="row justify-content-center">
         <div class="col-lg-5 col-md-6">
-          <h1 class="text-white">Welcome!</h1>
-          <p class="text-lead text-light">Use these awesome forms to login or create new account in your project for free.</p>
+          <h3 class="text-white">Welcome!</h3>
         </div>
       </div>
     </div>
@@ -21,7 +20,7 @@
   <div class="row justify-content-center">
     <div class="col-lg-6 col-md-8">
       <div class="card bg-secondary shadow border-0">
-        <div class="card-header bg-transparent pb-5">
+        <div class="card-header bg-transparent">
           <div class="text-muted text-center mt-2 mb-4"><small>Sign up with</small></div>
           <div class="text-center">
             <a href="javascript:void(0)" class="btn btn-neutral btn-icon mr-4">
@@ -44,7 +43,15 @@
                 <div class="input-group-prepend">
                   <span class="input-group-text"><i class="ni ni-hat-3"></i></span>
                 </div>
-                <input class="form-control" placeholder="Name" type="text">
+                <input class="form-control form-input-control" [(ngModel)]="firstName" placeholder="First Name" type="text">
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="input-group input-group-alternative mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="ni ni-hat-3"></i></span>
+                </div>
+                <input class="form-control form-input-control" [(ngModel)]="lastName" placeholder="Last Name" type="text">
               </div>
             </div>
             <div class="form-group">
@@ -52,18 +59,19 @@
                 <div class="input-group-prepend">
                   <span class="input-group-text"><i class="ni ni-email-83"></i></span>
                 </div>
-                <input class="form-control" placeholder="Email" type="email">
+                <input class="form-control form-input-control" [(ngModel)]="email" placeholder="Email" type="email">
               </div>
             </div>
-            <div class="form-group">
+            <div>
               <div class="input-group input-group-alternative">
                 <div class="input-group-prepend">
                   <span class="input-group-text"><i class="ni ni-lock-circle-open"></i></span>
                 </div>
-                <input class="form-control" placeholder="Password" type="password">
+                <input class="form-control" [(ngModel)]="password" placeholder="Password" type="password">
               </div>
             </div>
-            <div class="text-muted font-italic"><small>password strength: <span class="text-success font-weight-700">strong</span></small></div>
+            <div class="text-muted font-italic"><small>password strength: <span
+                  class="text-success font-weight-700">strong</span></small></div>
             <div class="row my-4">
               <div class="col-12">
                 <div class="custom-control custom-control-alternative custom-checkbox">
@@ -75,7 +83,7 @@
               </div>
             </div>
             <div class="text-center">
-              <button type="button" class="btn btn-primary mt-4">Create account</button>
+              <button type="button" (click)="setSuccess()" class="btn btn-primary mt-4">Create account</button>
             </div>
           </form>
         </div>
@@ -83,3 +91,12 @@
     </div>
   </div>
 </div>
+
+<!-- <div class="alert-container">
+  <div [hidden]="!success" class="alert alert-success custom-alert fading-element" role="alert">
+    <strong>Success!</strong> Please, check your email inbox.
+  </div>
+  <div [hidden]="!error" class="alert alert-danger custom-alert fading-element" role="alert">
+    <strong>Danger!</strong> There has been some error!
+  </div>
+</div> -->

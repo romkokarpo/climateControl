@@ -133,14 +133,14 @@ func handleUserLogin(c *gin.Context) {
 	c.SetCookie(
 		"id_token",
 		authService.JwtToken,
-		authService.ExpirationTime.Second(),
+		60*60,
 		"/",
 		c.Request.Host,
 		false,
 		true,
 	)
 	c.JSON(http.StatusOK, bson.M{
-		"expiresIn": authService.ExpirationTime.Second(),
+		"expiresIn": 60 * 60,
 		"idToken":   authService.JwtToken,
 	})
 }

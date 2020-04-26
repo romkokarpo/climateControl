@@ -10010,7 +10010,7 @@ button.bg-darker:focus
 .mb-7,
 .my-7
 {
-    margin-bottom: 6rem !important;
+    margin-bottom: 3rem !important;
 }
 
 .ml-7,
@@ -18180,7 +18180,6 @@ textarea[resize='horizontal']
 }
 .input-group .form-control:not(:first-child)
 {
-    padding-left: 0; 
 
     border-left: 0;
 }
@@ -18421,7 +18420,6 @@ textarea[resize='horizontal']
 }
 .input-group .form-control:not(:first-child)
 {
-    padding-left: 0; 
 
     border-left: 0;
 }
@@ -19000,10 +18998,6 @@ textarea[resize='horizontal']
 
     letter-spacing: .05px; 
     text-transform: uppercase;
-}
-.navbar-horizontal .navbar-brand img
-{
-    height: 30px;
 }
 
 .navbar-horizontal .navbar-dark .navbar-brand
