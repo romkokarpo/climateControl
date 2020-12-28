@@ -1,9 +1,9 @@
 package repositories
 
 import (
-	"climateControl/server/DAL"
-	"climateControl/server/DTO"
-	"climateControl/server/models"
+	"github.com/romkokarpo/climateControl/DAL"
+	"github.com/romkokarpo/climateControl/DTO"
+	"github.com/romkokarpo/climateControl/models"
 
 	"github.com/PeteProgrammer/go-automapper"
 	"go.mongodb.org/mongo-driver/bson"

@@ -1,8 +1,8 @@
 package repositories
 
 import (
-	"climateControl/server/DAL"
-	"climateControl/server/models"
+	"github.com/romkokarpo/climateControl/DAL"
+	"github.com/romkokarpo/climateControl/models"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"

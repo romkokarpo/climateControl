@@ -1,10 +1,11 @@
 package repositories
 
 import (
-	"climateControl/server/DAL"
-	"climateControl/server/DTO"
-	"climateControl/server/models"
 	"log"
+
+	"github.com/romkokarpo/climateControl/DAL"
+	"github.com/romkokarpo/climateControl/DTO"
+	"github.com/romkokarpo/climateControl/models"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"

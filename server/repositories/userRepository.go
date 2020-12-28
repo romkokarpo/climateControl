@@ -1,12 +1,13 @@
 package repositories
 
 import (
-	"climateControl/server/DAL"
-	"climateControl/server/DTO"
-	"climateControl/server/customErrors"
-	"climateControl/server/models"
 	"log"
 	"time"
+
+	"github.com/romkokarpo/climateControl/DAL"
+	"github.com/romkokarpo/climateControl/DTO"
+	"github.com/romkokarpo/climateControl/customErrors"
+	"github.com/romkokarpo/climateControl/models"
 
 	"github.com/PeteProgrammer/go-automapper"
 	"golang.org/x/crypto/bcrypt"

@@ -1,7 +1,7 @@
 package DTO
 
 import (
-	"climateControl/server/models"
+	"github.com/romkokarpo/climateControl/models"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )

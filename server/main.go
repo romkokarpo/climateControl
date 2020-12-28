@@ -1,12 +1,14 @@
 package main
 
 import (
-	"climateControl/server/DTO"
-	"climateControl/server/repositories"
-	"climateControl/server/services"
 	"encoding/json"
 	"net/http"
 	"time"
+
+	"github.com/romkokarpo/climateControl/DTO"
+
+	"github.com/romkokarpo/climateControl/repositories"
+	"github.com/romkokarpo/climateControl/services"
 
 	"github.com/gin-gonic/gin"
 	cors "github.com/itsjamie/gin-cors"
